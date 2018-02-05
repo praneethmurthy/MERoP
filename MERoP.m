@@ -1,31 +1,24 @@
 function [BG, FG, L_hat, S_hat, T_hat, t_hat, ...
     P_track_full, T_calc]= ...
-    ReProCS_pca_real(M1, P_init, mu, ev_thresh, alpha, K)
-%%%This is the ReProCS-PCA algorithm. This is the main function for the real video Background-
+    MERoP(M1, P_init, mu, alpha, K)
+%%%This is the MERoP algorithm. This is the main function for the real video Background-
 %%%Foreground separation problem. 
 
-%This folder contains the code accompanying pre-print.
+%This folder contains the code accompanying paper.
 %
-%[1] "New Results for Provable Dynamic Robust PCA", Praneeth Narayanamurthy and Namrata Vaswani, arXiv:1705.08948, 2017.
-%
-%If you use this code please also cite the following papers
-%[2] "An online algorithm for separating sparse  and low-dimensional signal sequences from their sum", Han Guo, Chenlu Qiu, and Namrata Vaswani, IEEE Trans. Sig. Proc., 2014.
-%[3] "Recursive Robust PCA or Recursive Sparse Recovery in Large but Structure Noise", Chenlu Qiu, Namrata Vaswani, Brain Lois, and Leslie Hogben, IEEE Trans. Info. Theory., 2014.
-%[4] "Real-time Robust Principal Components' Pursuit", Chenlu Qiu, and Namrata Vaswani, Allerton, 2010.
+%[1] "A fast Memory-Efficient Algorithm for Robust PCA (MEROP)",  
+% Praneeth Narayanamurthy and Namrata Vaswani, ICASSP, 2018.
 
 
 %%%                          Inputs                         %%%
-%%%     M - measurement matrix                              %%%
-%%%     ev_thres - threshold for subspace change detection  %%%
+%%%     M1 - measurement matrix                             %%%
 %%%     P_init - an initial estimate of the subspace        %%%
-%%%     t_train - the dimension of the training data        %%%
 
 
 %%%                       Algorithm parameters              %%%
 %%%     alpha - frame length                                %%%
 %%%     mu - column-averages of data                        %%%
 %%%     K - number of projection PCA steps                  %%%
-%%%     omega - threshold for non-zero value in S           %%%
 
 
 %%%                          Outputs                        %%%
@@ -54,7 +47,7 @@ t_hat = [];
 M = M1 - repmat(mu, 1, t_max);
 k = 0;
 cnt = 1;
-ph = 0;     %ph - 0 => detect, 1 => ppca
+ph = 1;     %ph - 0 => detect, 1 => ppca
 opts.delta = 0.4;
 
 phi_t = speye(n) - P_hat * P_hat';
@@ -90,12 +83,12 @@ for ii = 2 : t_max
             MM = (1 / sqrt(alpha)) * phi.times(L_hat(:, ii - alpha + 1 : ii));
             
             if(~ph)     %%detect phase
-                aa = svds(MM, 1);
-                if(aa >= sqrt(ev_thresh))
-                    ph = 1;
-                    t_hat = [t_hat, ii];
-                    k = 0;
-                end
+%                 aa = svds(MM, 1);
+%                 if(aa >= sqrt(ev_thresh))
+%                     ph = 1;
+%                     t_hat = [t_hat, ii];
+%                     k = 0;
+%                 end
             else        %%ppca phase
                 P_hat = simpleEVD((L_hat(:, ii - alpha + 1 : ii)), r);
                 phi_t = speye(n) - P_hat * P_hat';

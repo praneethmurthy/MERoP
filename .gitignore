@@ -2,7 +2,11 @@
 *.m~
 
 #exclude videos, photos etc
-*.avi, *.jpg, *.jpeg, *.eps, *.pdf
+*.avi
+*.jpg
+*.jpeg
+*.eps
+*.pdf
 
 #exclude temporary files
 wrapper_compare_real_videos.m
